@@ -14,20 +14,23 @@ function safeTruncate(str, maxLength = 30) {
 
 const keyboards = {
   /**
-   * Asosiy menyu (Pastdagi doimiy tugmalar)
+   * Asosiy menyu (Hozircha faqat WebApp ishlashi uchun eski tugmalar komentga olindi)
    */
   mainMenu(isAdmin = false) {
+    /*
     const buttons = [
       ['🚀 SMM & Nakrutka', '🛍 AI & Raqamli Obunalar'],
       ['👤 Profil & Balans', '💳 Balansni to\'ldirish'],
       ['📦 Mening buyurtmalarim', 'ℹ️ Qo\'llanma & Yordam']
     ];
+    */
 
     if (isAdmin) {
-      buttons.push(['👑 Admin Boshqaruv']);
+      return Markup.keyboard([['👑 Admin Boshqaruv']]).resize();
     }
 
-    return Markup.keyboard(buttons).resize();
+    // Oddiy foydalanuvchilarda eski pastki tugmalarni olib tashlaymiz (faqat WebApp tugmasi chiqadi)
+    return Markup.removeKeyboard();
   },
 
   /**

@@ -16,20 +16,25 @@ function registerStartHandlers(bot) {
       const isAdmin = ctx.from.id === config.adminId;
 
       const welcomeText = `👋 <b>Assalomu alaykum, ${ctx.from.first_name}!</b>\n\n` +
-        `🚀 <b>Sensey Store</b> — Eng arzon SMM Nakrutka va AI raqamli xizmatlar do'koniga xush kelibsiz!\n\n` +
-        `✨ <b>Mavjud xizmatlar:</b>\n` +
-        `• 🚀 <b>SMM & Nakrutka:</b> <i>Telegram, Instagram, YouTube, TikTok (obunachi, like, ko'rishlar)</i>\n` +
-        `• 🤖 <b>AI & Obunalar:</b> <i>Gemini Plus, Duolingo Super, Adobe Express, CapCut Pro va h.k.</i>\n\n` +
-        `⚡️ Barcha xizmatlar to'lovdan so'ng <b>1 soniyada avtomatik</b> tarzda ishga tushadi.\n\n` +
-        `👇 Kerakli bo'limni tanlang:`;
+        `🚀 <b>Sensey Store</b> — Barcha SMM Nakrutka va AI raqamli obunalar endi yagona zamonaviy <b>Mini App (Web Ilova)</b> ichida!\n\n` +
+        `✨ <b>Ilova orqali:</b>\n` +
+        `• 🚀 <b>1 600+ SMM xizmatlar:</b> <i>Telegram, Instagram, YouTube, TikTok</i>\n` +
+        `• 🤖 <b>AI & Obunalar:</b> <i>Gemini Plus, Duolingo Super, Adobe Express, CapCut Pro</i>\n` +
+        `• 💳 <b>Hisobni to'ldirish va buyurtmalar tarixi</b>\n\n` +
+        `👇 Do'konni ochish uchun pastdagi tugmani bosing:`;
 
+      // Eski pastki tugmalarni tozalash (admin uchun Admin Boshqaruv qoladi)
       await ctx.replyWithHTML(welcomeText, keyboards.mainMenu(isAdmin));
 
-      if (config.webappUrl && config.webappUrl.startsWith('https://')) {
+      const appUrl = (config.webappUrl && config.webappUrl.startsWith('https://'))
+        ? config.webappUrl
+        : null;
+
+      if (appUrl) {
         await ctx.replyWithHTML(
-          `📱 <b>Yangi!</b> Do'konimizning qulay <b>Mini App (Web Ilova)</b> talqinidan ham foydalanishingiz mumkin:`,
+          `📱 <b>Sensey Store Mini App:</b>`,
           Markup.inlineKeyboard([
-            [Markup.button.webApp('📱 Do\'konni ochish (WebApp)', config.webappUrl)]
+            [Markup.button.webApp('🛍 Do\'konni ochish (WebApp)', appUrl)]
           ])
         );
       }

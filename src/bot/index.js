@@ -26,10 +26,11 @@ function createBot() {
   registerSubscriptionHandler(bot);
 
   // 2. Handlerlarni ro'yxatga olish
+  // Hozircha barcha xarid va xizmatlar WebApp orqali ishlaydi (eski bot menyulari komentga olindi):
   registerStartHandlers(bot);
-  registerSmmHandlers(bot);
-  registerCatalogHandlers(bot);
-  registerProfileHandlers(bot);
+  // registerSmmHandlers(bot);
+  // registerCatalogHandlers(bot);
+  // registerProfileHandlers(bot);
   registerAdminHandlers(bot);
 
   return bot;
