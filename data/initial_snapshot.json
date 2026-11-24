@@ -1,0 +1,332 @@
+{
+  "exportedAt": "2026-11-24T17:36:42.811Z",
+  "users": [
+    {
+      "telegram_id": 1118457274,
+      "username": "sherozbek_17",
+      "first_name": "She'rozbek",
+      "balance_uzs": 0,
+      "is_blocked": 0,
+      "created_at": "2026-11-23 09:58:15"
+    },
+    {
+      "telegram_id": 1661553201,
+      "username": "Qwert_iky",
+      "first_name": "qwert_iky",
+      "balance_uzs": 5000,
+      "is_blocked": 0,
+      "created_at": "2026-11-24 11:22:01"
+    },
+    {
+      "telegram_id": 5882864189,
+      "username": "UZBTOP_712",
+      "first_name": "HA$AN",
+      "balance_uzs": 100,
+      "is_blocked": 0,
+      "created_at": "2026-11-23 10:19:28"
+    },
+    {
+      "telegram_id": 6829579640,
+      "username": "UmarDilwodovich",
+      "first_name": "UMAR",
+      "balance_uzs": 0,
+      "is_blocked": 0,
+      "created_at": "2026-11-24 11:41:05"
+    },
+    {
+      "telegram_id": 7983616924,
+      "username": "MrElyor_coder",
+      "first_name": "乂 𝗘̷ 𝗟̷ 𝗬̷ 𝗢̷ 𝗥̷ 乂",
+      "balance_uzs": 0,
+      "is_blocked": 0,
+      "created_at": "2026-11-23 10:25:31"
+    },
+    {
+      "telegram_id": 8153998617,
+      "username": "",
+      "first_name": "🕸️_S-K_🕸️",
+      "balance_uzs": 0,
+      "is_blocked": 0,
+      "created_at": "2026-11-23 10:25:35"
+    },
+    {
+      "telegram_id": 8241404928,
+      "username": "IBROHIM_DEVELOPER12",
+      "first_name": "𝘐𝘉𝘙𝘖𝘏𝘐𝘔𝘟𝘖'𝘑𝘈¹²",
+      "balance_uzs": 0,
+      "is_blocked": 0,
+      "created_at": "2026-11-24 17:23:24"
+    },
+    {
+      "telegram_id": 8422157752,
+      "username": "ISMOILUZB022",
+      "first_name": "I̷S̷M̷O̷I̷L̷ & D̷A̷S̷T̷U̷R̷C̷H̷I̷",
+      "balance_uzs": 100,
+      "is_blocked": 0,
+      "created_at": "2026-11-23 10:19:44"
+    },
+    {
+      "telegram_id": 8536464582,
+      "username": "",
+      "first_name": "ASADBEK",
+      "balance_uzs": 0,
+      "is_blocked": 0,
+      "created_at": "2026-11-23 10:19:33"
+    }
+  ],
+  "orders": [
+    {
+      "id": 1,
+      "order_code": "ORD-1795429431386-125",
+      "user_id": 5882864189,
+      "service_id": "service_gemini_plus_6m",
+      "service_name": "Gemini Plus 6 Months",
+      "quantity": 1,
+      "total_uzs": 9900,
+      "cost_usd": 0.4,
+      "status": "delivered",
+      "delivered_products": "[\"https://apigw.ioh.co.id/shrt?o=G1-NjI4NTg0NjIzOTYwNSNHMUFJX1BST01PIzE3ODE0MTI1ODEyOTI=\"]",
+      "reseller_order_id": "APIGGJKDIF",
+      "created_at": "2026-11-23 10:23:55"
+    },
+    {
+      "id": 2,
+      "order_code": "ORD-1795519403270-665",
+      "user_id": 1661553201,
+      "service_id": "service_duolingo_12m",
+      "service_name": "Duolingo Super 12M",
+      "quantity": 1,
+      "total_uzs": 3300,
+      "cost_usd": 0.25,
+      "status": "delivered",
+      "delivered_products": "[\"https://www.duolingo.com/redeem?code=A4W2J7SSVQGJJLY\"]",
+      "reseller_order_id": "APILL4UJY3",
+      "created_at": "2026-11-24 11:23:27"
+    }
+  ],
+  "smm_orders": [
+    {
+      "id": 1,
+      "order_code": "SMM-1795519788445-413",
+      "user_id": 1661553201,
+      "seensms_order_id": 789850,
+      "service_id": 90,
+      "service_name": "📨 Telegram Reaksiya (👍)",
+      "target_link": "https://t.me/baxtiyorov_blog/2024",
+      "quantity": 20,
+      "total_uzs": 20,
+      "cost_uzs": 13,
+      "profit_uzs": 7,
+      "status": "In progress",
+      "start_count": null,
+      "remains": null,
+      "created_at": "2026-11-24 11:29:49"
+    },
+    {
+      "id": 2,
+      "order_code": "SMM-1795520186730-239",
+      "user_id": 1661553201,
+      "seensms_order_id": 789859,
+      "service_id": 91,
+      "service_name": "📨 Telegram Reaksiya (👎)",
+      "target_link": "https://t.me/baxtiyorov_blog/2024",
+      "quantity": 1000,
+      "total_uzs": 1000,
+      "cost_uzs": 670,
+      "profit_uzs": 330,
+      "status": "In progress",
+      "start_count": null,
+      "remains": null,
+      "created_at": "2026-11-24 11:36:27"
+    },
+    {
+      "id": 3,
+      "order_code": "SMM-1795520424124-968",
+      "user_id": 1661553201,
+      "seensms_order_id": 789863,
+      "service_id": 92,
+      "service_name": "📨 Telegram Reaksiya (🔥)",
+      "target_link": "https://t.me/baxtiyorov_blog/2024",
+      "quantity": 680,
+      "total_uzs": 680,
+      "cost_uzs": 456,
+      "profit_uzs": 224,
+      "status": "In progress",
+      "start_count": null,
+      "remains": null,
+      "created_at": "2026-11-24 11:40:24"
+    }
+  ],
+  "transactions": [
+    {
+      "id": 1,
+      "user_id": 5882864189,
+      "amount_uzs": 0,
+      "type": "deposit",
+      "payment_method": "card_manual",
+      "status": "pending",
+      "details": "Chek yuborildi",
+      "created_at": "2026-11-23 10:22:58"
+    },
+    {
+      "id": 2,
+      "user_id": 5882864189,
+      "amount_uzs": 10000,
+      "type": "admin_adjustment",
+      "payment_method": "internal",
+      "status": "completed",
+      "details": "Admin tomonidan qo'shildi (1118457274)",
+      "created_at": "2026-11-23 10:23:29"
+    },
+    {
+      "id": 3,
+      "user_id": 5882864189,
+      "amount_uzs": -9900,
+      "type": "purchase",
+      "payment_method": "internal",
+      "status": "completed",
+      "details": "Xarid: Gemini Plus 6 Months (#ORD-1795429431386-125)",
+      "created_at": "2026-11-23 10:23:51"
+    },
+    {
+      "id": 4,
+      "user_id": 8422157752,
+      "amount_uzs": 0,
+      "type": "deposit",
+      "payment_method": "card_manual",
+      "status": "pending",
+      "details": "Chek yuborildi",
+      "created_at": "2026-11-23 10:26:27"
+    },
+    {
+      "id": 5,
+      "user_id": 8422157752,
+      "amount_uzs": 0,
+      "type": "deposit",
+      "payment_method": "card_manual",
+      "status": "pending",
+      "details": "Chek yuborildi",
+      "created_at": "2026-11-23 11:06:27"
+    },
+    {
+      "id": 6,
+      "user_id": 8422157752,
+      "amount_uzs": 100,
+      "type": "admin_adjustment",
+      "payment_method": "internal",
+      "status": "completed",
+      "details": "Admin tomonidan qo'shildi (1118457274)",
+      "created_at": "2026-11-23 11:06:43"
+    },
+    {
+      "id": 7,
+      "user_id": 8422157752,
+      "amount_uzs": 0,
+      "type": "deposit",
+      "payment_method": "card_manual",
+      "status": "pending",
+      "details": "Chek yuborildi",
+      "created_at": "2026-11-23 11:09:39"
+    },
+    {
+      "id": 8,
+      "user_id": 1118457274,
+      "amount_uzs": 50000,
+      "type": "deposit",
+      "payment_method": "card_manual",
+      "status": "rejected",
+      "details": "Chek soxta deb topildi",
+      "created_at": "2026-11-24 11:17:29"
+    },
+    {
+      "id": 9,
+      "user_id": 1661553201,
+      "amount_uzs": 5000,
+      "type": "deposit",
+      "payment_method": "card_manual",
+      "status": "completed",
+      "details": "Mijoz so'ragan summa: 5000 so'm",
+      "created_at": "2026-11-24 11:22:59"
+    },
+    {
+      "id": 10,
+      "user_id": 1661553201,
+      "amount_uzs": -3300,
+      "type": "purchase",
+      "payment_method": "internal",
+      "status": "completed",
+      "details": "Xarid: Duolingo Super 12M (#ORD-1795519403270-665)",
+      "created_at": "2026-11-24 11:23:23"
+    },
+    {
+      "id": 11,
+      "user_id": 1661553201,
+      "amount_uzs": -20,
+      "type": "purchase",
+      "payment_method": "internal",
+      "status": "completed",
+      "details": "SMM Xarid: 📨 Telegram Reaksiya (👍) (#SMM-1795519788445-413)",
+      "created_at": "2026-11-24 11:29:48"
+    },
+    {
+      "id": 12,
+      "user_id": 1661553201,
+      "amount_uzs": -500,
+      "type": "purchase",
+      "payment_method": "internal",
+      "status": "completed",
+      "details": "SMM Xarid: 📨 Telegram Reaksiya (👍) (#SMM-1795520109109-761)",
+      "created_at": "2026-11-24 11:35:09"
+    },
+    {
+      "id": 13,
+      "user_id": 1661553201,
+      "amount_uzs": 500,
+      "type": "refund",
+      "payment_method": "internal",
+      "status": "completed",
+      "details": "Avtomatik qaytarildi (#SMM-1795520109109-761) - Xato: Order creation failed",
+      "created_at": "2026-11-24 11:35:10"
+    },
+    {
+      "id": 14,
+      "user_id": 1661553201,
+      "amount_uzs": -1000,
+      "type": "purchase",
+      "payment_method": "internal",
+      "status": "completed",
+      "details": "SMM Xarid: 📨 Telegram Reaksiya (👎) (#SMM-1795520186730-239)",
+      "created_at": "2026-11-24 11:36:26"
+    },
+    {
+      "id": 15,
+      "user_id": 1661553201,
+      "amount_uzs": -680,
+      "type": "purchase",
+      "payment_method": "internal",
+      "status": "completed",
+      "details": "SMM Xarid: 📨 Telegram Reaksiya (🔥) (#SMM-1795520424124-968)",
+      "created_at": "2026-11-24 11:40:24"
+    },
+    {
+      "id": 16,
+      "user_id": 1661553201,
+      "amount_uzs": 5000,
+      "type": "deposit",
+      "payment_method": "card_manual",
+      "status": "completed",
+      "details": "Mijoz so'ragan summa: 5000 so'm",
+      "created_at": "2026-11-24 11:50:55"
+    },
+    {
+      "id": 17,
+      "user_id": 1118457274,
+      "amount_uzs": 5000,
+      "type": "deposit",
+      "payment_method": "card_webapp",
+      "status": "pending",
+      "details": "WebApp orqali so'ralgan summa: 5000 so'm",
+      "created_at": "2026-11-24 17:29:56"
+    }
+  ]
+}

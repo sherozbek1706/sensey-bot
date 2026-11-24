@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: sensey-store-bot
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BOT_TOKEN
+        sync: false
+      - key: ADMIN_ID
+        value: "1118457274"
+      - key: AIVAULTHUB_BASE_URL
+        value: "https://reseller.aivaulthub.store"
+      - key: AIVAULTHUB_API_KEY
+        sync: false
+      - key: SEENSMS_BASE_URL
+        value: "https://seensms.uz/api/v1"
+      - key: SEENSMS_API_KEY
+        sync: false
+      - key: USD_TO_UZS_RATE
+        value: "13000"
+      - key: DEFAULT_PROFIT_MULTIPLIER
+        value: "1"
+      - key: SEENSMS_PROFIT_MULTIPLIER
+        value: "0.7"
+      - key: PAYMENT_CARD_NUMBER
+        value: "5614 6818 7500 9551"
+      - key: PAYMENT_CARD_HOLDER
+        value: "SHE'ROZBEK BAXTIYOROV"
+      - key: SALES_CHANNEL_ID
+        value: "@senseyboydukon"

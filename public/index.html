@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Sensey Store — AI & SMM Mini App</title>
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root[data-theme="light"] {
+      --bg-canvas: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --bg-input: #f8fafc;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --border-hairline: #e2e8f0;
+      --border-focus: #0f172a;
+      --accent: #0f172a;
+      --accent-fg: #ffffff;
+      --accent-soft: rgba(15, 23, 42, 0.06);
+      --brand-blue: #2563eb;
+      --brand-blue-soft: rgba(37, 99, 235, 0.1);
+      --success: #10b981;
+      --success-soft: rgba(16, 185, 129, 0.12);
+      --danger: #ef4444;
+      --danger-soft: rgba(239, 68, 68, 0.12);
+      --cloud-nav-bg: rgba(255, 255, 255, 0.82);
+      --cloud-nav-border: rgba(226, 232, 240, 0.9);
+      --cloud-nav-shadow: 0 12px 34px -6px rgba(15, 23, 42, 0.12), 0 4px 12px -2px rgba(15, 23, 42, 0.06);
+      --card-shadow: 0 1px 3px rgba(15, 23, 42, 0.03), 0 1px 2px rgba(15, 23, 42, 0.02);
+      --overlay-bg: rgba(15, 23, 42, 0.45);
+    }
+
+    :root[data-theme="dark"] {
+      --bg-canvas: #090d16;
+      --bg-card: #111827;
+      --bg-subtle: #1e293b;
+      --bg-input: #0f172a;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-hairline: #1e293b;
+      --border-focus: #f8fafc;
+      --accent: #f8fafc;
+      --accent-fg: #090d16;
+      --accent-soft: rgba(248, 250, 252, 0.08);
+      --brand-blue: #3b82f6;
+      --brand-blue-soft: rgba(59, 130, 246, 0.16);
+      --success: #10b981;
+      --success-soft: rgba(16, 185, 129, 0.18);
+      --danger: #f87171;
+      --danger-soft: rgba(248, 113, 113, 0.18);
+      --cloud-nav-bg: rgba(17, 24, 39, 0.82);
+      --cloud-nav-border: rgba(255, 255, 255, 0.1);
+      --cloud-nav-shadow: 0 16px 40px -6px rgba(0, 0, 0, 0.65), 0 4px 14px -2px rgba(0, 0, 0, 0.4);
+      --card-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+      --overlay-bg: rgba(0, 0, 0, 0.7);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-canvas);
+      color: var(--text-primary);
+      line-height: 1.5;
+      min-height: 100vh;
+      padding-bottom: 110px;
+      transition: background-color 0.2s ease, color 0.2s ease;
+      overflow-x: hidden;
+    }
+
+    .app-shell {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* Minimal Top Header */
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: var(--cloud-nav-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-hairline);
+      padding: 12px 16px;
+      margin: 0 -16px 18px -16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: var(--accent-fg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-title {
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: block;
+      margin-top: -2px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .balance-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-hairline);
+      padding: 6px 11px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .balance-chip:active {
+      transform: scale(0.96);
+    }
+
+    .balance-plus {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--accent-fg);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .theme-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid var(--border-hairline);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .theme-btn:active {
+      transform: scale(0.92);
+    }
+
+    /* Section Headers */
+    .section-head {
+      margin-bottom: 14px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+    }
+
+    .section-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Search & Filter Controls */
+    .search-box {
+      position: relative;
+      margin-bottom: 12px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 12px 14px 12px 40px;
+      border-radius: 14px;
+      border: 1px solid var(--border-hairline);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s ease;
+      box-shadow: var(--card-shadow);
+    }
+
+    .search-input:focus {
+      border-color: var(--border-focus);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .pill-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      scrollbar-width: none;
+    }
+
+    .pill-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter-pill {
+      flex-shrink: 0;
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border-hairline);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .filter-pill.active {
+      background: var(--accent);
+      color: var(--accent-fg);
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .category-select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border-hairline);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-size: 13px;
+      font-family: inherit;
+      font-weight: 500;
+      margin-bottom: 14px;
+      outline: none;
+    }
+
+    /* Product & Service Cards */
+    .card-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .item-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 16px;
+      padding: 14px 16px;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
+      transition: transform 0.12s ease, border-color 0.15s ease;
+    }
+
+    .item-card:active {
+      transform: scale(0.985);
+    }
+
+    .item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .item-badges {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+    }
+
+    .badge.stock-ok {
+      background: var(--success-soft);
+      color: var(--success);
+    }
+
+    .badge.stock-out {
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .badge.platform {
+      background: var(--brand-blue-soft);
+      color: var(--brand-blue);
+    }
+
+    .item-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+      word-break: break-word;
+    }
+
+    .item-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .item-price-col {
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .item-price {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .item-unit {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: block;
+    }
+
+    /* Tab Views */
+    .tab-view {
+      display: none;
+      animation: fadeIn 0.18s ease;
+    }
+
+    .tab-view.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Floating Cloud Bottom Navigation ("Bulutli Pastki Navbar") */
+    .cloud-nav-wrap {
+      position: fixed;
+      bottom: 16px;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: center;
+      padding: 0 16px;
+      pointer-events: none;
+    }
+
+    .cloud-nav {
+      pointer-events: auto;
+      width: 100%;
+      max-width: 440px;
+      background: var(--cloud-nav-bg);
+      backdrop-filter: blur(22px) saturate(190%);
+      -webkit-backdrop-filter: blur(22px) saturate(190%);
+      border: 1px solid var(--cloud-nav-border);
+      box-shadow: var(--cloud-nav-shadow);
+      border-radius: 999px;
+      padding: 6px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+    }
+
+    .nav-item {
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      padding: 8px 4px;
+      border-radius: 999px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .nav-item svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2;
+      transition: transform 0.2s ease;
+    }
+
+    .nav-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-item.active {
+      background: var(--accent);
+      color: var(--accent-fg);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.16);
+    }
+
+    .nav-item.active svg {
+      transform: translateY(-1px);
+    }
+
+    /* Wallet / Profile Card */
+    .wallet-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .wallet-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .wallet-amount {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin: 4px 0 14px 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .bank-card-box {
+      background: var(--bg-subtle);
+      border: 1px dashed var(--border-hairline);
+      border-radius: 14px;
+      padding: 14px;
+      margin: 14px 0;
+    }
+
+    .bank-number-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .bank-number {
+      font-family: 'SF Mono', ui-monospace, monospace;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .copy-btn {
+      border: 1px solid var(--border-hairline);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Forms & Buttons */
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border-hairline);
+      background: var(--bg-input);
+      color: var(--text-primary);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .form-input:focus {
+      border-color: var(--border-focus);
+    }
+
+    .preset-chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .preset-chip {
+      padding: 5px 11px;
+      border-radius: 8px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-hairline);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px 18px;
+      border-radius: 14px;
+      border: none;
+      background: var(--accent);
+      color: var(--accent-fg);
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity 0.15s ease, transform 0.12s ease;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.985);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Bottom Sheet Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: var(--overlay-bg);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 100;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-sheet {
+      width: 100%;
+      max-width: 520px;
+      max-height: 88vh;
+      overflow-y: auto;
+      background: var(--bg-card);
+      border-top-left-radius: 24px;
+      border-top-right-radius: 24px;
+      padding: 20px 18px 28px 18px;
+      border-top: 1px solid var(--border-hairline);
+      animation: slideUp 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .sheet-handle {
+      width: 38px;
+      height: 4px;
+      background: var(--border-hairline);
+      border-radius: 999px;
+      margin: 0 auto 16px auto;
+    }
+
+    .sheet-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .sheet-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .close-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid var(--border-hairline);
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .calc-summary {
+      background: var(--bg-subtle);
+      border-radius: 14px;
+      padding: 14px;
+      margin: 14px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .calc-total {
+      font-size: 18px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      z-index: 200;
+      background: var(--accent);
+      color: var(--accent-fg);
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+      max-width: 90%;
+      text-align: center;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .desc-box {
+      font-size: 13px;
+      color: var(--text-secondary);
+      background: var(--bg-subtle);
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+      white-space: pre-line;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    .code-box {
+      font-family: ui-monospace, monospace;
+      font-size: 12px;
+      background: var(--bg-subtle);
+      padding: 8px 10px;
+      border-radius: 8px;
+      margin-top: 6px;
+      word-break: break-all;
+      border: 1px solid var(--border-hairline);
+    }
+  </style>
+</head>
+<body>
+  <div id="toast" class="toast">Xabar</div>
+
+  <div class="app-shell">
+    <!-- Top Sticky Minimalist Header -->
+    <header class="top-bar">
+      <div class="brand">
+        <div class="brand-mark">S</div>
+        <div>
+          <span class="brand-title">Sensey Store</span>
+          <span class="brand-sub" id="userGreeting">AI & SMM Xizmatlar</span>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <div class="balance-chip" onclick="switchTab('profile')" title="Balansni to'ldirish">
+          <span id="headerBalance">0 so'm</span>
+          <span class="balance-plus">+</span>
+        </div>
+        <button class="theme-btn" id="themeToggle" onclick="toggleTheme()" aria-label="Mavzuni o'zgartirish">
+          <svg id="themeIcon" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- TAB 1: AI & Raqamli Obunalar -->
+    <section id="tab-ai" class="tab-view active">
+      <div class="section-head">
+        <h1 class="section-title">AI & Obunalar</h1>
+        <span class="section-meta" id="aiCountMeta">Yuklanmoqda...</span>
+      </div>
+
+      <div class="search-box">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="aiSearchInput" class="search-input" placeholder="Obuna qidirish (Gemini, Duolingo, Adobe...)" oninput="renderAiCatalog()" />
+      </div>
+
+      <div id="aiCatalogList" class="card-grid">
+        <div class="empty-state">Obunalar yuklanmoqda...</div>
+      </div>
+    </section>
+
+    <!-- TAB 2: SMM & Nakrutka -->
+    <section id="tab-smm" class="tab-view">
+      <div class="section-head">
+        <h1 class="section-title">SMM & Nakrutka</h1>
+        <span class="section-meta" id="smmCountMeta">1 600+ xizmatlar</span>
+      </div>
+
+      <div class="search-box">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="smmSearchInput" class="search-input" placeholder="Xizmat yoki ID qidirish (masalan: reaksiya, like...)" oninput="onSmmFilterChange()" />
+      </div>
+
+      <div class="pill-row" id="platformPills">
+        <button class="filter-pill active" data-plat="all" onclick="selectPlatform('all')">Barchasi</button>
+        <button class="filter-pill" data-plat="telegram" onclick="selectPlatform('telegram')">📱 Telegram</button>
+        <button class="filter-pill" data-plat="instagram" onclick="selectPlatform('instagram')">📸 Instagram</button>
+        <button class="filter-pill" data-plat="youtube" onclick="selectPlatform('youtube')">▶️ YouTube</button>
+        <button class="filter-pill" data-plat="tiktok" onclick="selectPlatform('tiktok')">🎵 TikTok</button>
+        <button class="filter-pill" data-plat="other" onclick="selectPlatform('other')">🌐 Boshqa</button>
+      </div>
+
+      <select id="smmCategorySelect" class="category-select" onchange="renderSmmList(true)">
+        <option value="all">Barcha kategoriyalar</option>
+      </select>
+
+      <div id="smmServiceList" class="card-grid">
+        <div class="empty-state">Xizmatlar yuklanmoqda...</div>
+      </div>
+
+      <div id="smmLoadMoreWrap" style="margin-top: 14px; display: none;">
+        <button class="btn-primary" style="background: var(--bg-subtle); color: var(--text-primary); border: 1px solid var(--border-hairline);" onclick="loadMoreSmm()">
+          Yana ko'rsatish
+        </button>
+      </div>
+    </section>
+
+    <!-- TAB 3: Buyurtmalarim -->
+    <section id="tab-orders" class="tab-view">
+      <div class="section-head">
+        <h1 class="section-title">Buyurtmalarim</h1>
+        <span class="section-meta" onclick="loadUserOrders()" style="cursor:pointer; color: var(--brand-blue);">🔄 Yangilash</span>
+      </div>
+
+      <div id="ordersListContainer" class="card-grid">
+        <div class="empty-state">Sizda hali buyurtmalar mavjud emas.</div>
+      </div>
+    </section>
+
+    <!-- TAB 4: Hisobim & Balans To'ldirish -->
+    <section id="tab-profile" class="tab-view">
+      <div class="section-head">
+        <h1 class="section-title">Hisob va To'lov</h1>
+        <span class="section-meta" id="profileIdMeta">ID: —</span>
+      </div>
+
+      <div class="wallet-card">
+        <div class="wallet-label">Joriy balansingiz</div>
+        <div class="wallet-amount" id="profileBalance">0 so'm</div>
+
+        <div class="form-group">
+          <label class="form-label">1. To'ldirish summasini kiriting (so'mda)</label>
+          <input type="number" id="depositAmountInput" class="form-input" placeholder="Masalan: 50000" value="25000" min="5000" />
+          <div class="preset-chips">
+            <span class="preset-chip" onclick="setDepositAmount(10000)">10 000</span>
+            <span class="preset-chip" onclick="setDepositAmount(25000)">25 000</span>
+            <span class="preset-chip" onclick="setDepositAmount(50000)">50 000</span>
+            <span class="preset-chip" onclick="setDepositAmount(100000)">100 000</span>
+          </div>
+        </div>
+
+        <div class="bank-card-box">
+          <div class="form-label" style="margin-bottom: 4px;">2. Ushbu kartaga o'tkazing:</div>
+          <div class="bank-number-row">
+            <span class="bank-number" id="cardNumberText">5614 6818 7500 9551</span>
+            <button class="copy-btn" onclick="copyCardNumber()">Nusxalash</button>
+          </div>
+          <div class="item-sub" id="cardHolderText">SHE'ROZBEK BAXTIYOROV</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">3. To'lov cheki (skrinshot) ni tanlang</label>
+          <input type="file" id="receiptFileInput" accept="image/*" class="form-input" style="padding: 9px;" />
+        </div>
+
+        <button class="btn-primary" id="submitDepositBtn" onclick="submitDeposit()">
+          ✅ Chekni yuborish va tasdiqlash
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <!-- BULUTLI PASTKI NAVIGATSIYA (Floating Cloud Bottom Bar) -->
+  <div class="cloud-nav-wrap">
+    <nav class="cloud-nav" aria-label="Asosiy navigatsiya">
+      <button class="nav-item active" data-tab="ai" onclick="switchTab('ai')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <rect x="3" y="3" width="7" height="7" rx="2"></rect>
+          <rect x="14" y="3" width="7" height="7" rx="2"></rect>
+          <rect x="14" y="14" width="7" height="7" rx="2"></rect>
+          <rect x="3" y="14" width="7" height="7" rx="2"></rect>
+        </svg>
+        <span class="nav-label">Obunalar</span>
+      </button>
+
+      <button class="nav-item" data-tab="smm" onclick="switchTab('smm')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+        </svg>
+        <span class="nav-label">Nakrutka</span>
+      </button>
+
+      <button class="nav-item" data-tab="orders" onclick="switchTab('orders')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+        <span class="nav-label">Xaridlar</span>
+      </button>
+
+      <button class="nav-item" data-tab="profile" onclick="switchTab('profile')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <span class="nav-label">Hisobim</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- MODAL / BOTTOM SHEET -->
+  <div id="modalBackdrop" class="modal-backdrop" onclick="onBackdropClick(event)">
+    <div class="modal-sheet" id="modalContent"></div>
+  </div>
+
+  <script>
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+    }
+
+    // State
+    let currentUser = {
+      telegramId: tg?.initDataUnsafe?.user?.id || 1118457274,
+      username: tg?.initDataUnsafe?.user?.username || '',
+      firstName: tg?.initDataUnsafe?.user?.first_name || 'Mijoz',
+      balanceUzs: 0
+    };
+
+    let aiCatalog = [];
+    let smmServices = [];
+    let filteredSmm = [];
+    let selectedPlatform = 'all';
+    let smmRenderLimit = 30;
+    let activeSmmService = null;
+
+    // Theme Setup (Default Light / White background, or persisted / Telegram scheme)
+    function initTheme() {
+      const saved = localStorage.getItem('sensey_theme');
+      const initial = saved || (tg?.colorScheme === 'dark' ? 'dark' : 'light');
+      applyTheme(initial);
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('sensey_theme', theme);
+      const icon = document.getElementById('themeIcon');
+      if (theme === 'dark') {
+        icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+      } else {
+        icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    }
+
+    function formatUzs(amount) {
+      return new Intl.NumberFormat('uz-UZ').format(Math.round(Number(amount) || 0)) + " so'm";
+    }
+
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 3000);
+    }
+
+    function stripHtml(html) {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html || '';
+      return tmp.textContent || tmp.innerText || '';
+    }
+
+    // Tab Navigation
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-view').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+      const targetView = document.getElementById(`tab-${tabId}`);
+      if (targetView) targetView.classList.add('active');
+
+      const targetNav = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
+      if (targetNav) targetNav.classList.add('active');
+
+      if (tabId === 'orders') {
+        loadUserOrders();
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // API Initialization
+    async function initApp() {
+      initTheme();
+      try {
+        const params = new URLSearchParams({
+          user_id: currentUser.telegramId,
+          username: currentUser.username,
+          first_name: currentUser.firstName
+        });
+        const res = await fetch(`/api/webapp/init?${params}`);
+        const data = await res.json();
+        if (data.success) {
+          currentUser = data.user;
+          updateBalanceUI(currentUser.balanceUzs);
+          document.getElementById('userGreeting').textContent = `Salom, ${currentUser.firstName}`;
+          document.getElementById('profileIdMeta').textContent = `ID: ${currentUser.telegramId}`;
+          if (data.paymentCard) {
+            document.getElementById('cardNumberText').textContent = data.paymentCard.number;
+            document.getElementById('cardHolderText').textContent = data.paymentCard.holder;
+          }
+        }
+      } catch (e) {
+        console.error('Init error:', e);
+      }
+
+      loadAiCatalog();
+      loadSmmServices();
+    }
+
+    function updateBalanceUI(balance) {
+      currentUser.balanceUzs = balance;
+      const formatted = formatUzs(balance);
+      document.getElementById('headerBalance').textContent = formatted;
+      document.getElementById('profileBalance').textContent = formatted;
+    }
+
+    // 1. Load AI Subscriptions
+    async function loadAiCatalog() {
+      try {
+        const res = await fetch('/api/webapp/catalog');
+        const data = await res.json();
+        if (data.success) {
+          aiCatalog = data.products || [];
+          renderAiCatalog();
+        }
+      } catch (e) {
+        document.getElementById('aiCatalogList').innerHTML = '<div class="empty-state">Obunalarni yuklashda xatolik.</div>';
+      }
+    }
+
+    function renderAiCatalog() {
+      const q = (document.getElementById('aiSearchInput').value || '').toLowerCase().trim();
+      const filtered = aiCatalog.filter(p => p.name.toLowerCase().includes(q));
+      document.getElementById('aiCountMeta').textContent = `${filtered.length} ta xizmat`;
+
+      const container = document.getElementById('aiCatalogList');
+      if (filtered.length === 0) {
+        container.innerHTML = '<div class="empty-state">Hech narsa topilmadi</div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(p => {
+        const stockClass = p.inStock ? 'stock-ok' : 'stock-out';
+        const stockText = p.inStock ? `${p.stock} ta mavjud` : 'Tugagan';
+        return `
+          <div class="item-card" onclick="openAiModal('${p.serviceId}')">
+            <div class="item-info">
+              <div class="item-badges">
+                <span class="badge ${stockClass}">${stockText}</span>
+                <span class="badge">⚡️ Avto-yetkazish</span>
+              </div>
+              <div class="item-title">${p.name}</div>
+              <div class="item-sub">1 soniyada litsenziya / promo link</div>
+            </div>
+            <div class="item-price-col">
+              <div class="item-price">${formatUzs(p.retailPriceUzs)}</div>
+              <span class="item-unit">1 dona</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openAiModal(serviceId) {
+      const product = aiCatalog.find(p => p.serviceId === serviceId);
+      if (!product) return;
+
+      const cleanDesc = stripHtml(product.description).trim() || 'Rasmiy obuna. Xarid qilingan zahoti aktivatsiya havolasi yoki kod taqdim etiladi.';
+
+      const html = `
+        <div class="sheet-handle"></div>
+        <div class="sheet-header">
+          <div>
+            <span class="badge ${product.inStock ? 'stock-ok' : 'stock-out'}">${product.inStock ? product.stock + ' ta omborda bor' : 'Omborda qolmagan'}</span>
+            <h3 class="sheet-title" style="margin-top:6px;">${product.name}</h3>
+          </div>
+          <button class="close-btn" onclick="closeModal()">✕</button>
+        </div>
+
+        <div class="desc-box">${cleanDesc}</div>
+
+        <div class="calc-summary">
+          <span style="font-size:13px; color:var(--text-secondary);">To'lov summasi:</span>
+          <span class="calc-total">${formatUzs(product.retailPriceUzs)}</span>
+        </div>
+
+        <button class="btn-primary" id="buyAiBtn" ${!product.inStock ? 'disabled' : ''} onclick="confirmBuyAi('${product.serviceId}')">
+          ${product.inStock ? '⚡️ Darhol sotib olish' : '❌ Vaqtincha tugagan'}
+        </button>
+      `;
+
+      openModal(html);
+    }
+
+    async function confirmBuyAi(serviceId) {
+      const btn = document.getElementById('buyAiBtn');
+      if (!btn) return;
+      btn.disabled = true;
+      btn.textContent = 'Bajarilmoqda...';
+
+      try {
+        const res = await fetch('/api/webapp/buy/ai', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: currentUser.telegramId,
+            username: currentUser.username,
+            firstName: currentUser.firstName,
+            serviceId
+          })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          showToast(data.error || 'Xarid qilishda xatolik');
+          if (data.code === 'INSUFFICIENT_BALANCE') {
+            closeModal();
+            switchTab('profile');
+          } else {
+            btn.disabled = false;
+            btn.textContent = '⚡️ Darhol sotib olish';
+          }
+          return;
+        }
+
+        updateBalanceUI(data.newBalance);
+        showToast('🎉 Xarid muvaffaqiyatli yakunlandi!');
+        closeModal();
+        switchTab('orders');
+      } catch (e) {
+        showToast('Tarmoq xatoligi yuz berdi');
+        btn.disabled = false;
+        btn.textContent = '⚡️ Darhol sotib olish';
+      }
+    }
+
+    // 2. Load SMM Services
+    async function loadSmmServices() {
+      try {
+        const res = await fetch('/api/webapp/smm/services');
+        const data = await res.json();
+        if (data.success) {
+          smmServices = data.services || [];
+          onSmmFilterChange();
+        }
+      } catch (e) {
+        document.getElementById('smmServiceList').innerHTML = '<div class="empty-state">SMM xizmatlarni yuklashda xatolik.</div>';
+      }
+    }
+
+    function selectPlatform(plat) {
+      selectedPlatform = plat;
+      document.querySelectorAll('#platformPills .filter-pill').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.plat === plat);
+      });
+      onSmmFilterChange();
+    }
+
+    function onSmmFilterChange() {
+      const platServices = smmServices.filter(s => selectedPlatform === 'all' || s.platform === selectedPlatform);
+
+      // Populate Categories Dropdown
+      const categories = Array.from(new Set(platServices.map(s => s.category)));
+      const select = document.getElementById('smmCategorySelect');
+      const prevCat = select.value;
+
+      select.innerHTML = `<option value="all">Barcha kategoriyalar (${categories.length} ta)</option>` +
+        categories.map(c => `<option value="${c.replace(/"/g, '&quot;')}">${c}</option>`).join('');
+
+      if (categories.includes(prevCat)) {
+        select.value = prevCat;
+      } else {
+        select.value = 'all';
+      }
+
+      renderSmmList(true);
+    }
+
+    function renderSmmList(resetLimit = false) {
+      if (resetLimit) smmRenderLimit = 30;
+
+      const q = (document.getElementById('smmSearchInput').value || '').toLowerCase().trim();
+      const cat = document.getElementById('smmCategorySelect').value;
+
+      filteredSmm = smmServices.filter(s => {
+        if (selectedPlatform !== 'all' && s.platform !== selectedPlatform) return false;
+        if (cat !== 'all' && s.category !== cat) return false;
+        if (q) {
+          const matchText = `${s.serviceId} ${s.name} ${s.category}`.toLowerCase();
+          if (!matchText.includes(q)) return false;
+        }
+        return true;
+      });
+
+      document.getElementById('smmCountMeta').textContent = `${filteredSmm.length} ta xizmat`;
+
+      const container = document.getElementById('smmServiceList');
+      const loadMoreWrap = document.getElementById('smmLoadMoreWrap');
+
+      if (filteredSmm.length === 0) {
+        container.innerHTML = '<div class="empty-state">Mos xizmat topilmadi</div>';
+        loadMoreWrap.style.display = 'none';
+        return;
+      }
+
+      const slice = filteredSmm.slice(0, smmRenderLimit);
+      container.innerHTML = slice.map(s => `
+        <div class="item-card" onclick="openSmmModal(${s.serviceId})">
+          <div class="item-info">
+            <div class="item-badges">
+              <span class="badge platform">#${s.serviceId}</span>
+              <span class="badge">${s.category}</span>
+              ${s.refill ? '<span class="badge stock-ok">🛡 Kafolatli</span>' : ''}
+            </div>
+            <div class="item-title">${s.name}</div>
+            <div class="item-sub">Min: ${s.min} • Max: ${s.max.toLocaleString()}</div>
+          </div>
+          <div class="item-price-col">
+            <div class="item-price">${formatUzs(s.retailRate)}</div>
+            <span class="item-unit">1 000 ta uchun</span>
+          </div>
+        </div>
+      `).join('');
+
+      loadMoreWrap.style.display = filteredSmm.length > smmRenderLimit ? 'block' : 'none';
+    }
+
+    function loadMoreSmm() {
+      smmRenderLimit += 30;
+      renderSmmList(false);
+    }
+
+    function openSmmModal(serviceId) {
+      const s = smmServices.find(item => Number(item.serviceId) === Number(serviceId));
+      if (!s) return;
+      activeSmmService = s;
+
+      const defaultQty = Math.max(s.min, Math.min(100, s.max));
+      const initialTotal = Math.round((defaultQty / 1000) * s.retailRate);
+
+      const html = `
+        <div class="sheet-handle"></div>
+        <div class="sheet-header">
+          <div>
+            <span class="badge platform">ID #${s.serviceId} • ${s.category}</span>
+            <h3 class="sheet-title" style="margin-top:6px;">${s.name}</h3>
+          </div>
+          <button class="close-btn" onclick="closeModal()">✕</button>
+        </div>
+
+        ${s.type ? `<div class="desc-box">${s.type}</div>` : ''}
+
+        <div class="form-group">
+          <label class="form-label">Havola (Kanal, profil yoki post linki)</label>
+          <input type="url" id="smmLinkInput" class="form-input" placeholder="https://t.me/... yoki https://instagram.com/..." />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Miqdori (Min: ${s.min} — Max: ${s.max.toLocaleString()})</label>
+          <input type="number" id="smmQtyInput" class="form-input" value="${defaultQty}" min="${s.min}" max="${s.max}" oninput="updateSmmCalc()" />
+          <div class="preset-chips">
+            <span class="preset-chip" onclick="setSmmQty(${s.min})">Min (${s.min})</span>
+            <span class="preset-chip" onclick="setSmmQty(100)">100</span>
+            <span class="preset-chip" onclick="setSmmQty(500)">500</span>
+            <span class="preset-chip" onclick="setSmmQty(1000)">1 000</span>
+            <span class="preset-chip" onclick="setSmmQty(5000)">5 000</span>
+          </div>
+        </div>
+
+        <div class="calc-summary">
+          <div>
+            <div style="font-size:12px; color:var(--text-secondary);">Jami hisoblangan narx:</div>
+            <div style="font-size:11px; color:var(--text-muted);">1 000 dona = ${formatUzs(s.retailRate)}</div>
+          </div>
+          <span class="calc-total" id="smmCalcTotal">${formatUzs(initialTotal)}</span>
+        </div>
+
+        <button class="btn-primary" id="submitSmmBtn" onclick="confirmBuySmm()">
+          🚀 Buyurtmani yuborish
+        </button>
+      `;
+
+      openModal(html);
+    }
+
+    function setSmmQty(val) {
+      if (!activeSmmService) return;
+      const clamped = Math.max(activeSmmService.min, Math.min(val, activeSmmService.max));
+      const inp = document.getElementById('smmQtyInput');
+      if (inp) {
+        inp.value = clamped;
+        updateSmmCalc();
+      }
+    }
+
+    function updateSmmCalc() {
+      if (!activeSmmService) return;
+      const qty = Number(document.getElementById('smmQtyInput')?.value) || 0;
+      const total = Math.round((qty / 1000) * activeSmmService.retailRate);
+      const el = document.getElementById('smmCalcTotal');
+      if (el) el.textContent = formatUzs(total);
+    }
+
+    async function confirmBuySmm() {
+      if (!activeSmmService) return;
+      const link = (document.getElementById('smmLinkInput')?.value || '').trim();
+      const quantity = Number(document.getElementById('smmQtyInput')?.value);
+
+      if (!link) {
+        return showToast('⚠️ Iltimos, havolani (link) kiriting');
+      }
+      if (!quantity || quantity < activeSmmService.min || quantity > activeSmmService.max) {
+        return showToast(`⚠️ Miqdor ${activeSmmService.min} va ${activeSmmService.max} orasida bo'lsin`);
+      }
+
+      const btn = document.getElementById('submitSmmBtn');
+      btn.disabled = true;
+      btn.textContent = 'Yuborilmoqda...';
+
+      try {
+        const res = await fetch('/api/webapp/buy/smm', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: currentUser.telegramId,
+            username: currentUser.username,
+            firstName: currentUser.firstName,
+            serviceId: activeSmmService.serviceId,
+            link,
+            quantity
+          })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          showToast(data.error || 'Xatolik yuz berdi');
+          if (data.code === 'INSUFFICIENT_BALANCE') {
+            closeModal();
+            switchTab('profile');
+          } else {
+            btn.disabled = false;
+            btn.textContent = '🚀 Buyurtmani yuborish';
+          }
+          return;
+        }
+
+        updateBalanceUI(data.newBalance);
+        showToast('🎉 SMM buyurtmangiz qabul qilindi!');
+        closeModal();
+        switchTab('orders');
+      } catch (e) {
+        showToast('Tarmoq xatoligi');
+        btn.disabled = false;
+        btn.textContent = '🚀 Buyurtmani yuborish';
+      }
+    }
+
+    // 3. Load User Orders
+    async function loadUserOrders() {
+      const container = document.getElementById('ordersListContainer');
+      try {
+        const res = await fetch(`/api/webapp/orders?user_id=${currentUser.telegramId}`);
+        const data = await res.json();
+        if (!data.success) return;
+
+        const aiOrders = data.aiOrders || [];
+        const smmOrders = data.smmOrders || [];
+
+        if (aiOrders.length === 0 && smmOrders.length === 0) {
+          container.innerHTML = '<div class="empty-state">Sizda hali xarid qilingan buyurtmalar yo\'q.</div>';
+          return;
+        }
+
+        let html = '';
+
+        smmOrders.forEach(ord => {
+          html += `
+            <div class="item-card" style="cursor:default;">
+              <div class="item-info">
+                <div class="item-badges">
+                  <span class="badge platform">🚀 SMM #${ord.seensms_order_id}</span>
+                  <span class="badge stock-ok">${ord.status}</span>
+                </div>
+                <div class="item-title">${ord.service_name}</div>
+                <div class="item-sub">Miqdor: ${ord.quantity} ta • ${ord.target_link}</div>
+              </div>
+              <div class="item-price-col">
+                <div class="item-price">${formatUzs(ord.total_uzs)}</div>
+                <span class="item-unit">${ord.created_at?.slice(0, 10) || ''}</span>
+              </div>
+            </div>
+          `;
+        });
+
+        aiOrders.forEach(ord => {
+          let codes = [];
+          try { codes = JSON.parse(ord.delivered_products || '[]'); } catch(e) { codes = [ord.delivered_products]; }
+          html += `
+            <div class="item-card" style="cursor:default; flex-direction:column; align-items:stretch;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <span class="badge stock-ok">🤖 AI Obuna • Yetkazildi</span>
+                  <div class="item-title" style="margin-top:4px;">${ord.service_name}</div>
+                </div>
+                <div class="item-price">${formatUzs(ord.total_uzs)}</div>
+              </div>
+              <div class="code-box">${codes.join('\n')}</div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+      } catch (e) {
+        container.innerHTML = '<div class="empty-state">Buyurtmalarni yuklashda xatolik.</div>';
+      }
+    }
+
+    // 4. Deposit & Wallet
+    function setDepositAmount(val) {
+      document.getElementById('depositAmountInput').value = val;
+    }
+
+    function copyCardNumber() {
+      const num = document.getElementById('cardNumberText').textContent.replace(/\s+/g, '');
+      navigator.clipboard.writeText(num).then(() => {
+        showToast('✅ Karta raqami nusxalandi!');
+      }).catch(() => {
+        showToast('Nusxalandi: ' + num);
+      });
+    }
+
+    async function submitDeposit() {
+      const amount = Number(document.getElementById('depositAmountInput').value);
+      const fileInput = document.getElementById('receiptFileInput');
+      const file = fileInput.files[0];
+
+      if (!amount || amount < 5000) {
+        return showToast('⚠️ Minimal to\'ldirish summasi 5 000 so\'m');
+      }
+      if (!file) {
+        return showToast('⚠️ Iltimos, to\'lov cheki skrinshotini tanlang');
+      }
+
+      const btn = document.getElementById('submitDepositBtn');
+      btn.disabled = true;
+      btn.textContent = 'Chek yuborilmoqda...';
+
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const res = await fetch('/api/webapp/deposit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId: currentUser.telegramId,
+              username: currentUser.username,
+              firstName: currentUser.firstName,
+              amount,
+              receiptBase64: reader.result
+            })
+          });
+          const data = await res.json();
+          if (!res.ok || !data.success) {
+            showToast(data.error || 'Xatolik yuz berdi');
+          } else {
+            showToast('✅ ' + data.message);
+            fileInput.value = '';
+          }
+        } catch (err) {
+          showToast('Tarmoq xatoligi');
+        } finally {
+          btn.disabled = false;
+          btn.textContent = '✅ Chekni yuborish va tasdiqlash';
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Modal Helpers
+    function openModal(html) {
+      document.getElementById('modalContent').innerHTML = html;
+      document.getElementById('modalBackdrop').classList.add('open');
+    }
+
+    function closeModal() {
+      document.getElementById('modalBackdrop').classList.remove('open');
+    }
+
+    function onBackdropClick(e) {
+      if (e.target.id === 'modalBackdrop') closeModal();
+    }
+
+    initApp();
+  </script>
+</body>
+</html>
