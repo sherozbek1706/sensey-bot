@@ -12,7 +12,8 @@ module.exports = {
   seenSms: {
     baseUrl: process.env.SEENSMS_BASE_URL || 'https://seensms.uz/api/v1',
     apiKey: process.env.SEENSMS_API_KEY || 'TUJxv3Vh0jWztlIEi28jZfx2EEQyQcRQ',
-    profitMultiplier: Number(process.env.SEENSMS_PROFIT_MULTIPLIER) || 1.5
+    profitMultiplier: Number(process.env.SEENSMS_PROFIT_MULTIPLIER) || 1.5,
+    starsProfitMultiplier: Number(process.env.STARS_PROFIT_MULTIPLIER) || 1.15
   },
   currency: {
     usdToUzsRate: Number(process.env.USD_TO_UZS_RATE) || 13000,

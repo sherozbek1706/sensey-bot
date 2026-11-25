@@ -94,6 +94,62 @@ class SeenSmsApiService {
   async cancelOrder(orderId) {
     return this._request('cancel', { order: orderId });
   }
+
+  /**
+   * ⭐️ Telegram Stars va Premium uchun qabul qiluvchi (@username) ni tekshirish
+   * Qaytadi: { found: true, username: "durov", name: "Pavel Durov", recipient: "...", avatar: "https://..." }
+   */
+  async checkTelegramUser(username, type = 'stars') {
+    const cleanUsername = String(username || '').replace(/^@/, '').trim();
+    return this._request('user_info', { username: cleanUsername, type });
+  }
+
+  /**
+   * ⭐️ Telegram Stars paketlari va narxlarini olish
+   * Qaytadi: [{ quantity: 50, price: 12987 }, ...]
+   */
+  async getStarsPrices() {
+    return this._request('stars_prices');
+  }
+
+  /**
+   * ⭐️ Telegram Stars sotib olish
+   * Qaytadi: { id: 4521, status: "queued", amount: 25974 }
+   */
+  async buyStars({ username, quantity }) {
+    const cleanUsername = String(username || '').replace(/^@/, '').trim();
+    return this._request('stars_buy', {
+      username: cleanUsername,
+      quantity: Number(quantity)
+    });
+  }
+
+  /**
+   * 💎 Telegram Premium narxlarini olish
+   * Qaytadi: [{ months: 3, price: 177422 }, { months: 6, price: 236763 }, { months: 12, price: 429170 }]
+   */
+  async getPremiumPrices() {
+    return this._request('premium_prices');
+  }
+
+  /**
+   * 💎 Telegram Premium sotib olish
+   * Qaytadi: { id: 4522, status: "queued", amount: 177422 }
+   */
+  async buyPremium({ username, months }) {
+    const cleanUsername = String(username || '').replace(/^@/, '').trim();
+    return this._request('premium_buy', {
+      username: cleanUsername,
+      months: Number(months)
+    });
+  }
+
+  /**
+   * ⭐️ Stars yoki Premium buyurtma holatini tekshirish
+   */
+  async getStarsOrderStatus(id) {
+    return this._request('stars_status', { id });
+  }
 }
 
 module.exports = new SeenSmsApiService();

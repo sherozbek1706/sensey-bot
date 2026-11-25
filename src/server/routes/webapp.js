@@ -441,4 +441,229 @@ router.post('/deposit', async (req, res) => {
   }
 });
 
+// Stars & Premium kesh
+let starsCache = { data: null, lastFetched: 0 };
+
+function getStarsMultiplier() {
+  let m = Number(config.seenSms.starsProfitMultiplier) || 1.15;
+  if (m > 0 && m < 1) return 1 + m;
+  return m > 0 ? m : 1.15;
+}
+
+/**
+ * 8. Telegram Stars va Premium paketlari hamda narxlari
+ */
+router.get('/stars/packages', async (req, res) => {
+  try {
+    const now = Date.now();
+    if (!starsCache.data || now - starsCache.lastFetched > 5 * 60 * 1000) {
+      const [rawStars, rawPremium] = await Promise.all([
+        seenSmsApi.getStarsPrices(),
+        seenSmsApi.getPremiumPrices()
+      ]);
+      starsCache.data = { rawStars: rawStars || [], rawPremium: rawPremium || [] };
+      starsCache.lastFetched = now;
+    }
+
+    const mult = getStarsMultiplier();
+    const stars = (starsCache.data.rawStars || []).map(item => {
+      const wholesalePrice = Number(item.price) || 0;
+      const retailPrice = Math.round((wholesalePrice * mult) / 100) * 100;
+      return {
+        quantity: Number(item.quantity),
+        wholesalePrice,
+        retailPrice
+      };
+    });
+
+    const premium = (starsCache.data.rawPremium || []).map(item => {
+      const wholesalePrice = Number(item.price) || 0;
+      const retailPrice = Math.round((wholesalePrice * mult) / 100) * 100;
+      return {
+        months: Number(item.months),
+        wholesalePrice,
+        retailPrice
+      };
+    });
+
+    res.json({
+      success: true,
+      stars,
+      premium
+    });
+  } catch (err) {
+    console.error('[WebApp Stars Packages Error]:', err);
+    res.status(500).json({ error: 'Stars narxlarini yuklashda xatolik: ' + err.message });
+  }
+});
+
+/**
+ * 9. Qabul qiluvchi Telegram @username ni tekshirish (avatar va ism)
+ */
+router.get('/stars/check-user', async (req, res) => {
+  try {
+    const username = String(req.query.username || '').replace(/^@/, '').trim();
+    const type = req.query.type === 'premium' ? 'premium' : 'stars';
+
+    if (!username || username.length < 3) {
+      return res.status(400).json({ found: false, error: 'Username kamida 3 ta belgidan iborat bo\'lishi kerak' });
+    }
+
+    const info = await seenSmsApi.checkTelegramUser(username, type);
+    res.json(info);
+  } catch (err) {
+    res.json({ found: false, error: err.message });
+  }
+});
+
+/**
+ * 10. Telegram Stars yoki Premium xarid qilish
+ */
+router.post('/buy/stars', async (req, res) => {
+  try {
+    const { userId, username, firstName, targetUsername, type, quantity, months } = req.body;
+    const telegramId = Number(userId);
+    const cleanTarget = String(targetUsername || '').replace(/^@/, '').trim();
+    const isPremium = type === 'premium';
+
+    if (!telegramId || !cleanTarget) {
+      return res.status(400).json({ error: 'Qabul qiluvchi Telegram @username ni kiriting' });
+    }
+
+    // Paket narxini aniqlash
+    const mult = getStarsMultiplier();
+    let wholesaleCost = 0;
+    let retailTotal = 0;
+    let itemTitle = '';
+    let unitQty = 1;
+
+    if (isPremium) {
+      const rawPremium = starsCache.data?.rawPremium || (await seenSmsApi.getPremiumPrices());
+      const pkg = (rawPremium || []).find(p => Number(p.months) === Number(months));
+      if (!pkg) return res.status(400).json({ error: 'Premium muddati noto\'g\'ri tanlandi' });
+      wholesaleCost = Number(pkg.price);
+      retailTotal = Math.round((wholesaleCost * mult) / 100) * 100;
+      itemTitle = `💎 Telegram Premium (${pkg.months} oy)`;
+      unitQty = Number(pkg.months);
+    } else {
+      const rawStars = starsCache.data?.rawStars || (await seenSmsApi.getStarsPrices());
+      const pkg = (rawStars || []).find(s => Number(s.quantity) === Number(quantity));
+      if (!pkg) return res.status(400).json({ error: 'Stars miqdori noto\'g\'ri tanlandi' });
+      wholesaleCost = Number(pkg.price);
+      retailTotal = Math.round((wholesaleCost * mult) / 100) * 100;
+      itemTitle = `⭐️ Telegram Stars (${pkg.quantity} ⭐️)`;
+      unitQty = Number(pkg.quantity);
+    }
+
+    const profit = retailTotal - wholesaleCost;
+    const user = repo.getOrCreateUser(telegramId, username || '', firstName || '');
+
+    if (user.balance_uzs < retailTotal) {
+      return res.status(400).json({
+        error: `Balansingiz yetarli emas! Kerak: ${smmService.formatUzs(retailTotal)}, Mavjud: ${smmService.formatUzs(user.balance_uzs)}`,
+        code: 'INSUFFICIENT_BALANCE'
+      });
+    }
+
+    const orderCode = `STR-${Date.now()}-${Math.floor(Math.random() * 900 + 100)}`;
+
+    // 1. Balansdan yechish
+    repo.adjustUserBalance(
+      telegramId,
+      -retailTotal,
+      'purchase',
+      'internal',
+      `${itemTitle} -> @${cleanTarget} (#${orderCode})`
+    );
+
+    // 2. SeenSMS API orqali Stars yoki Premium yuborish
+    let apiRes;
+    try {
+      if (isPremium) {
+        apiRes = await seenSmsApi.buyPremium({ username: cleanTarget, months: unitQty });
+      } else {
+        apiRes = await seenSmsApi.buyStars({ username: cleanTarget, quantity: unitQty });
+      }
+    } catch (apiError) {
+      // Avtomatik refund
+      repo.adjustUserBalance(
+        telegramId,
+        retailTotal,
+        'refund',
+        'internal',
+        `Avtomatik qaytarildi (#${orderCode}) - Xato: ${apiError.message}`
+      );
+      return res.status(502).json({
+        error: `Xarid bajarilmadi: ${apiError.message}. Mablag'ingiz hisobingizga qaytarildi.`
+      });
+    }
+
+    const seensmsOrderId = apiRes.id || apiRes.order || 0;
+
+    // 3. Buyurtmani bazaga saqlash
+    repo.createSmmOrderRecord({
+      orderCode,
+      userId: telegramId,
+      seensmsOrderId,
+      serviceId: isPremium ? 99999 : 88888,
+      serviceName: itemTitle,
+      targetLink: `@${cleanTarget}`,
+      quantity: unitQty,
+      totalUzs: retailTotal,
+      costUzs: wholesaleCost,
+      profitUzs: profit
+    });
+
+    const updatedUser = repo.getUser(telegramId);
+
+    // 4. Xaridorga, adminga va sotuvlar kanaliga xabar
+    if (req.bot) {
+      try {
+        await req.bot.telegram.sendMessage(
+          telegramId,
+          `🎉 <b>${itemTitle} buyurtmangiz qabul qilindi!</b>\n\n` +
+          `👤 <b>Qabul qiluvchi:</b> @${cleanTarget}\n` +
+          `🔢 <b>Buyurtma kodi:</b> <code>${orderCode}</code>\n` +
+          `💰 <b>To'landi:</b> ${smmService.formatUzs(retailTotal)}\n\n` +
+          `⚡️ <i>1–2 daqiqa ichida @${cleanTarget} hisobiga tushadi!</i>`,
+          { parse_mode: 'HTML' }
+        );
+      } catch (e) {}
+
+      try {
+        await req.bot.telegram.sendMessage(
+          config.adminId,
+          `⭐️ <b>Yangi Stars / Premium xaridi!</b>\n\n` +
+          `👤 Xaridor: ${firstName || telegramId} (@${username || 'yoq'})\n` +
+          `🎯 Qabul qiluvchi: @${cleanTarget}\n` +
+          `📦 Paket: ${itemTitle}\n` +
+          `💵 Sotildi: ${smmService.formatUzs(retailTotal)}\n` +
+          `📉 Tannarxi: ${smmService.formatUzs(wholesaleCost)}\n` +
+          `💰 <b>Sof foyda: +${smmService.formatUzs(profit)}</b>`,
+          { parse_mode: 'HTML' }
+        );
+      } catch (e) {}
+
+      notifySalesChannel(req.bot, {
+        type: 'smm',
+        orderCode,
+        serviceName: itemTitle,
+        quantity: unitQty,
+        totalUzs: retailTotal,
+        customerName: firstName || username || 'Mijoz'
+      });
+    }
+
+    res.json({
+      success: true,
+      orderCode,
+      seensmsOrderId,
+      newBalance: updatedUser.balance_uzs
+    });
+  } catch (err) {
+    console.error('[WebApp Buy Stars Error]:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;

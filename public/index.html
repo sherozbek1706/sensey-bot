@@ -416,7 +416,7 @@
     .cloud-nav {
       pointer-events: auto;
       width: 100%;
-      max-width: 440px;
+      max-width: 460px;
       background: var(--cloud-nav-bg);
       backdrop-filter: blur(22px) saturate(190%);
       -webkit-backdrop-filter: blur(22px) saturate(190%);
@@ -425,8 +425,52 @@
       border-radius: 999px;
       padding: 6px;
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 4px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 3px;
+    }
+
+    .stars-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .star-pkg-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: var(--card-shadow);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+      transition: transform 0.12s ease, border-color 0.15s ease;
+    }
+
+    .star-pkg-card:active {
+      transform: scale(0.975);
+    }
+
+    .recipient-preview {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-hairline);
+    }
+
+    .recipient-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: var(--border-hairline);
     }
 
     .nav-item {
@@ -790,6 +834,52 @@
       </div>
     </section>
 
+    <!-- TAB: TELEGRAM STARS & PREMIUM -->
+    <section id="tab-stars" class="tab-view">
+      <div class="section-head">
+        <h1 class="section-title">⭐️ Stars & Premium</h1>
+        <span class="section-meta">Avto-yuborish</span>
+      </div>
+
+      <div class="wallet-card" style="padding: 16px; margin-bottom: 16px;">
+        <label class="form-label">Qabul qiluvchi Telegram @username</label>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="starsTargetUsername" class="form-input" placeholder="@username kiriting..." oninput="onStarsUsernameInput()" />
+          <button class="copy-btn" style="padding: 0 14px; flex-shrink:0;" onclick="checkStarsRecipient()">Tekshirish</button>
+        </div>
+        <div class="preset-chips" style="margin-top: 8px;">
+          <span class="preset-chip" onclick="fillMyUsername()">👤 O'zimga (@<span id="myUsernameChip">men</span>)</span>
+        </div>
+
+        <div id="recipientPreviewBox" class="recipient-preview">
+          <img id="recipientAvatarImg" class="recipient-avatar" src="" alt="" onerror="this.style.display='none'" />
+          <div style="flex:1; min-width:0;">
+            <div class="item-title" id="recipientFullName" style="margin-bottom:0;">—</div>
+            <div class="item-sub" id="recipientUserTag">@—</div>
+          </div>
+          <span class="badge stock-ok">✓ Topildi</span>
+        </div>
+      </div>
+
+      <div class="section-head" style="margin-top: 6px;">
+        <h2 class="section-title" style="font-size: 16px;">⭐️ Telegram Stars paketlari</h2>
+        <span class="section-meta" id="starsCountMeta">Yuklanmoqda...</span>
+      </div>
+
+      <div id="starsPackagesGrid" class="stars-grid">
+        <div class="empty-state" style="grid-column: span 2;">Stars paketlari yuklanmoqda...</div>
+      </div>
+
+      <div class="section-head">
+        <h2 class="section-title" style="font-size: 16px;">💎 Telegram Premium (Sovg'a)</h2>
+        <span class="section-meta">Loginsiz @username ga</span>
+      </div>
+
+      <div id="premiumPackagesList" class="card-grid">
+        <div class="empty-state">Premium narxlari yuklanmoqda...</div>
+      </div>
+    </section>
+
     <!-- TAB 2: SMM & Nakrutka -->
     <section id="tab-smm" class="tab-view">
       <div class="section-head">
@@ -895,6 +985,13 @@
           <rect x="3" y="14" width="7" height="7" rx="2"></rect>
         </svg>
         <span class="nav-label">Obunalar</span>
+      </button>
+
+      <button class="nav-item" data-tab="stars" onclick="switchTab('stars')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+        <span class="nav-label">Stars</span>
       </button>
 
       <button class="nav-item" data-tab="smm" onclick="switchTab('smm')">
@@ -1037,6 +1134,14 @@
           updateBalanceUI(currentUser.balanceUzs);
           document.getElementById('userGreeting').textContent = `Salom, ${currentUser.firstName}`;
           document.getElementById('profileIdMeta').textContent = `ID: ${currentUser.telegramId}`;
+          if (currentUser.username) {
+            const chip = document.getElementById('myUsernameChip');
+            if (chip) chip.textContent = currentUser.username;
+            const targetInp = document.getElementById('starsTargetUsername');
+            if (targetInp && !targetInp.value) {
+              targetInp.value = '@' + currentUser.username;
+            }
+          }
           if (data.paymentCard) {
             document.getElementById('cardNumberText').textContent = data.paymentCard.number;
             document.getElementById('cardHolderText').textContent = data.paymentCard.holder;
@@ -1052,6 +1157,7 @@
       initTheme();
       await syncUserProfile();
       loadAiCatalog();
+      loadStarsPackages();
       loadSmmServices();
       loadUserOrders();
 
@@ -1194,6 +1300,215 @@
         showToast('Tarmoq xatoligi yuz berdi');
         btn.disabled = false;
         btn.textContent = '⚡️ Darhol sotib olish';
+      }
+    }
+
+    // 1.5. Load Telegram Stars & Premium Packages
+    let starsPackages = [];
+    let premiumPackages = [];
+    let verifiedRecipient = null;
+
+    async function loadStarsPackages() {
+      try {
+        const res = await fetch('/api/webapp/stars/packages?_t=' + Date.now());
+        const data = await res.json();
+        if (data.success) {
+          starsPackages = data.stars || [];
+          premiumPackages = data.premium || [];
+          renderStarsPackages();
+        }
+      } catch (e) {
+        document.getElementById('starsPackagesGrid').innerHTML = '<div class="empty-state" style="grid-column:span 2;">Yuklashda xatolik</div>';
+      }
+    }
+
+    function renderStarsPackages() {
+      const starsGrid = document.getElementById('starsPackagesGrid');
+      const premList = document.getElementById('premiumPackagesList');
+      document.getElementById('starsCountMeta').textContent = `${starsPackages.length} ta paket`;
+
+      if (starsPackages.length === 0) {
+        starsGrid.innerHTML = '<div class="empty-state" style="grid-column:span 2;">Paketlar topilmadi</div>';
+      } else {
+        starsGrid.innerHTML = starsPackages.map(pkg => `
+          <div class="star-pkg-card" onclick="openStarsBuyModal('stars', ${pkg.quantity})">
+            <div>
+              <span class="badge stock-ok">⭐️ Official</span>
+              <div class="item-title" style="font-size:16px; margin-top:6px;">${pkg.quantity.toLocaleString()} Stars</div>
+            </div>
+            <div>
+              <div class="item-price" style="font-size:15px;">${formatUzs(pkg.retailPrice)}</div>
+              <span class="item-unit">1 bosishda</span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      if (premiumPackages.length === 0) {
+        premList.innerHTML = '<div class="empty-state">Premium paketlar topilmadi</div>';
+      } else {
+        premList.innerHTML = premiumPackages.map(pkg => `
+          <div class="item-card" onclick="openStarsBuyModal('premium', ${pkg.months})">
+            <div class="item-info">
+              <div class="item-badges">
+                <span class="badge platform">💎 Official Gift</span>
+                <span class="badge stock-ok">⚡️ Avto</span>
+              </div>
+              <div class="item-title">Telegram Premium — ${pkg.months} Oylik</div>
+              <div class="item-sub">Akkauntga kirmasdan @username orqali</div>
+            </div>
+            <div class="item-price-col">
+              <div class="item-price">${formatUzs(pkg.retailPrice)}</div>
+              <span class="item-unit">${pkg.months} oy</span>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function fillMyUsername() {
+      if (!currentUser.username) {
+        return showToast('⚠️ Sizning Telegram profilingizda @username o\'rnatilmagan');
+      }
+      const inp = document.getElementById('starsTargetUsername');
+      inp.value = '@' + currentUser.username;
+      checkStarsRecipient();
+    }
+
+    function onStarsUsernameInput() {
+      verifiedRecipient = null;
+      document.getElementById('recipientPreviewBox').style.display = 'none';
+    }
+
+    async function checkStarsRecipient() {
+      const inp = document.getElementById('starsTargetUsername');
+      const raw = (inp.value || '').replace(/^@/, '').trim();
+      if (!raw || raw.length < 3) {
+        return showToast('⚠️ Iltimos, to\'g\'ri @username kiriting');
+      }
+
+      try {
+        const res = await fetch(`/api/webapp/stars/check-user?username=${encodeURIComponent(raw)}`);
+        const data = await res.json();
+        const box = document.getElementById('recipientPreviewBox');
+        if (data.found) {
+          verifiedRecipient = data;
+          document.getElementById('recipientFullName').textContent = data.name || data.recipient || raw;
+          document.getElementById('recipientUserTag').textContent = '@' + (data.username || raw);
+          const img = document.getElementById('recipientAvatarImg');
+          if (data.avatar) {
+            img.src = data.avatar;
+            img.style.display = 'block';
+          } else {
+            img.style.display = 'none';
+          }
+          box.style.display = 'flex';
+          showToast('✅ Qabul qiluvchi tasdiqlandi!');
+        } else {
+          verifiedRecipient = null;
+          box.style.display = 'none';
+          showToast('❌ Bunday @username topilmadi');
+        }
+      } catch (e) {
+        showToast('Tekshirishda xatolik');
+      }
+    }
+
+    function openStarsBuyModal(type, val) {
+      const inp = document.getElementById('starsTargetUsername');
+      const targetUser = (inp.value || '').replace(/^@/, '').trim();
+
+      if (!targetUser || targetUser.length < 3) {
+        inp.focus();
+        return showToast('⚠️ Avval tepaga qabul qiluvchi @username ni kiriting!');
+      }
+
+      const isPrem = type === 'premium';
+      const pkg = isPrem
+        ? premiumPackages.find(p => p.months === Number(val))
+        : starsPackages.find(s => s.quantity === Number(val));
+
+      if (!pkg) return;
+
+      const title = isPrem
+        ? `💎 Telegram Premium (${pkg.months} Oylik)`
+        : `⭐️ ${pkg.quantity.toLocaleString()} Telegram Stars`;
+
+      const recipientDisplay = verifiedRecipient
+        ? `${verifiedRecipient.name} (@${targetUser})`
+        : `@${targetUser}`;
+
+      const html = `
+        <div class="sheet-handle"></div>
+        <div class="sheet-header">
+          <div>
+            <span class="badge stock-ok">${isPrem ? '💎 Official Premium' : '⭐️ Official Stars'}</span>
+            <h3 class="sheet-title" style="margin-top:6px;">${title}</h3>
+          </div>
+          <button class="close-btn" onclick="closeModal()">✕</button>
+        </div>
+
+        <div class="desc-box" style="margin-bottom:12px;">
+          🎯 <b>Qabul qiluvchi:</b> ${recipientDisplay}\n⚡️ To'lov tasdiqlanishi bilan Stars/Premium 1–2 daqiqa ichida ushbu profilga avtomatik tushadi.
+        </div>
+
+        <div class="calc-summary">
+          <span style="font-size:13px; color:var(--text-secondary);">Jami to'lov summasi:</span>
+          <span class="calc-total">${formatUzs(pkg.retailPrice)}</span>
+        </div>
+
+        <button class="btn-primary" id="confirmStarsBtn" onclick="confirmBuyStarsPackage('${type}', ${val}, '${targetUser}')">
+          ⚡️ Tasdiqlash va yuborish
+        </button>
+      `;
+
+      openModal(html);
+    }
+
+    async function confirmBuyStarsPackage(type, val, targetUsername) {
+      const btn = document.getElementById('confirmStarsBtn');
+      if (!btn) return;
+      btn.disabled = true;
+      btn.textContent = 'Yuborilmoqda...';
+
+      try {
+        const payload = {
+          userId: currentUser.telegramId,
+          username: currentUser.username,
+          firstName: currentUser.firstName,
+          targetUsername,
+          type,
+          quantity: type === 'stars' ? Number(val) : undefined,
+          months: type === 'premium' ? Number(val) : undefined
+        };
+
+        const res = await fetch('/api/webapp/buy/stars', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (!res.ok || !data.success) {
+          showToast(data.error || 'Xarid qilishda xatolik');
+          if (data.code === 'INSUFFICIENT_BALANCE') {
+            closeModal();
+            switchTab('profile');
+          } else {
+            btn.disabled = false;
+            btn.textContent = '⚡️ Tasdiqlash va yuborish';
+          }
+          return;
+        }
+
+        updateBalanceUI(data.newBalance);
+        showToast('🎉 Stars / Premium muvaffaqiyatli yuborildi!');
+        closeModal();
+        switchTab('orders');
+      } catch (e) {
+        showToast('Tarmoq xatoligi');
+        btn.disabled = false;
+        btn.textContent = '⚡️ Tasdiqlash va yuborish';
       }
     }
 
