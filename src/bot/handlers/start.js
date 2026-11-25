@@ -31,10 +31,12 @@ function registerStartHandlers(bot) {
         : null;
 
       if (appUrl) {
+        const sep = appUrl.includes('?') ? '&' : '?';
+        const personalUrl = `${appUrl}${sep}uid=${ctx.from.id}&uname=${encodeURIComponent(ctx.from.username || '')}&fname=${encodeURIComponent(ctx.from.first_name || '')}`;
         await ctx.replyWithHTML(
           `📱 <b>Sensey Store Mini App:</b>`,
           Markup.inlineKeyboard([
-            [Markup.button.webApp('🛍 Do\'konni ochish (WebApp)', appUrl)]
+            [Markup.button.webApp('🛍 Do\'konni ochish (WebApp)', personalUrl)]
           ])
         );
       }

@@ -935,11 +935,22 @@
       tg.expand();
     }
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const resolvedUid = tg?.initDataUnsafe?.user?.id
+      || Number(urlParams.get('uid'))
+      || Number(urlParams.get('user_id'))
+      || Number(localStorage.getItem('sensey_uid'))
+      || 1118457274;
+
+    if (resolvedUid) {
+      localStorage.setItem('sensey_uid', String(resolvedUid));
+    }
+
     // State
     let currentUser = {
-      telegramId: tg?.initDataUnsafe?.user?.id || 1118457274,
-      username: tg?.initDataUnsafe?.user?.username || '',
-      firstName: tg?.initDataUnsafe?.user?.first_name || 'Mijoz',
+      telegramId: resolvedUid,
+      username: tg?.initDataUnsafe?.user?.username || urlParams.get('uname') || localStorage.getItem('sensey_uname') || '',
+      firstName: tg?.initDataUnsafe?.user?.first_name || urlParams.get('fname') || localStorage.getItem('sensey_fname') || 'Mijoz',
       balanceUzs: 0
     };
 
@@ -1007,19 +1018,22 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // API Initialization
-    async function initApp() {
-      initTheme();
+    // Foydalanuvchi balansi va profilini serverdan yangilash (keshsiz)
+    async function syncUserProfile() {
       try {
         const params = new URLSearchParams({
           user_id: currentUser.telegramId,
           username: currentUser.username,
-          first_name: currentUser.firstName
+          first_name: currentUser.firstName,
+          _t: Date.now()
         });
-        const res = await fetch(`/api/webapp/init?${params}`);
+        const res = await fetch(`/api/webapp/init?${params}`, { cache: 'no-store' });
         const data = await res.json();
         if (data.success) {
           currentUser = data.user;
+          localStorage.setItem('sensey_uid', String(currentUser.telegramId));
+          if (currentUser.username) localStorage.setItem('sensey_uname', currentUser.username);
+          if (currentUser.firstName) localStorage.setItem('sensey_fname', currentUser.firstName);
           updateBalanceUI(currentUser.balanceUzs);
           document.getElementById('userGreeting').textContent = `Salom, ${currentUser.firstName}`;
           document.getElementById('profileIdMeta').textContent = `ID: ${currentUser.telegramId}`;
@@ -1029,11 +1043,32 @@
           }
         }
       } catch (e) {
-        console.error('Init error:', e);
+        console.error('Sync profile error:', e);
       }
+    }
 
+    // API Initialization
+    async function initApp() {
+      initTheme();
+      await syncUserProfile();
       loadAiCatalog();
       loadSmmServices();
+      loadUserOrders();
+
+      // Foydalanuvchi Telegram chatda to'lovni tasdiqlab WebApp'ga qaytganda avtomatik yangilash
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          syncUserProfile();
+          loadUserOrders();
+        }
+      });
+
+      // Har 7 soniyada balansni jonli tekshirib turish
+      setInterval(() => {
+        if (document.visibilityState === 'visible') {
+          syncUserProfile();
+        }
+      }, 7000);
     }
 
     function updateBalanceUI(balance) {
@@ -1386,7 +1421,7 @@
     async function loadUserOrders() {
       const container = document.getElementById('ordersListContainer');
       try {
-        const res = await fetch(`/api/webapp/orders?user_id=${currentUser.telegramId}`);
+        const res = await fetch(`/api/webapp/orders?user_id=${currentUser.telegramId}&_t=${Date.now()}`, { cache: 'no-store' });
         const data = await res.json();
         if (!data.success) return;
 

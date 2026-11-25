@@ -1,4 +1,5 @@
 const config = require('./config');
+const db = require('./db');
 const { createBot } = require('./bot');
 const { createApp } = require('./server/app');
 
@@ -6,6 +7,11 @@ async function bootstrap() {
   console.log('---------------------------------------------------------');
   console.log('🚀 Sensey Telegram Shop Bot tizimi ishga tushirilmoqda...');
   console.log('---------------------------------------------------------');
+
+  // 0. Bulutli zaxiradan (Telegram Cloud DB) eng oxirgi ma'lumotlarni tiklash
+  if (typeof db.restoreFromTelegramCloud === 'function') {
+    await db.restoreFromTelegramCloud();
+  }
 
   // 1. Bot nusxasini yaratish
   const bot = createBot();

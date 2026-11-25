@@ -8,6 +8,15 @@ const seenSmsApi = require('../../services/seenSmsApi');
 const { notifySalesChannel } = require('../../services/channelNotifier');
 const keyboards = require('../../bot/keyboards');
 const config = require('../../config');
+const db = require('../../db');
+
+// Telegram WebView keshlab qolmasligi uchun har doim yangi ma'lumot qaytarish
+router.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  next();
+});
 
 /**
  * Platformani aniqlash yordamchisi
@@ -96,8 +105,14 @@ router.get('/smm/services', async (req, res) => {
 router.get('/orders', (req, res) => {
   try {
     const userId = Number(req.query.user_id) || config.adminId;
-    const aiOrders = repo.getUserOrders(userId, 30);
-    const smmOrders = repo.getUserSmmOrders(userId, 30);
+    let aiOrders = repo.getUserOrders(userId, 30);
+    let smmOrders = repo.getUserSmmOrders(userId, 30);
+
+    // Agar admin bo'lsa, do'kondagi barcha buyurtmalarni ham ko'ra olsin
+    if (userId === config.adminId) {
+      aiOrders = db.prepare('SELECT * FROM orders ORDER BY created_at DESC LIMIT 30').all();
+      smmOrders = db.prepare('SELECT * FROM smm_orders ORDER BY created_at DESC LIMIT 30').all();
+    }
 
     res.json({
       success: true,

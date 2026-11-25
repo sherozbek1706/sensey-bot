@@ -116,10 +116,12 @@ function registerSubscriptionHandler(bot) {
     await ctx.replyWithHTML(welcomeText, keyboards.mainMenu(isAdmin));
 
     if (config.webappUrl && config.webappUrl.startsWith('https://')) {
+      const sep = config.webappUrl.includes('?') ? '&' : '?';
+      const personalUrl = `${config.webappUrl}${sep}uid=${ctx.from.id}&uname=${encodeURIComponent(ctx.from.username || '')}&fname=${encodeURIComponent(ctx.from.first_name || '')}`;
       await ctx.replyWithHTML(
         `📱 <b>Sensey Store Mini App:</b>`,
         Markup.inlineKeyboard([
-          [Markup.button.webApp('🛍 Do\'konni ochish (WebApp)', config.webappUrl)]
+          [Markup.button.webApp('🛍 Do\'konni ochish (WebApp)', personalUrl)]
         ])
       );
     }

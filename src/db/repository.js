@@ -15,10 +15,12 @@ class Repository {
       `);
       insertStmt.run(telegramId, username, firstName);
       user = findStmt.get(telegramId);
+      if (typeof db.saveSnapshot === 'function') db.saveSnapshot();
     } else if (username && user.username !== username) {
       // Username yangilangan bo'lsa yangilab qo'yish
       db.prepare('UPDATE users SET username = ?, first_name = ? WHERE telegram_id = ?')
         .run(username, firstName, telegramId);
+      if (typeof db.saveSnapshot === 'function') db.saveSnapshot();
     }
 
     return user;
@@ -81,6 +83,7 @@ class Repository {
       resellerOrderId
     );
 
+    if (typeof db.saveSnapshot === 'function') db.saveSnapshot();
     return db.prepare('SELECT * FROM orders WHERE order_code = ?').get(orderCode);
   }
 
@@ -107,6 +110,7 @@ class Repository {
       VALUES (?, ?, 'deposit', ?, 'pending', ?)
     `);
     const info = stmt.run(userId, amountUzs, paymentMethod, details);
+    if (typeof db.saveSnapshot === 'function') db.saveSnapshot();
     return db.prepare('SELECT * FROM transactions WHERE id = ?').get(info.lastInsertRowid);
   }
 
@@ -123,6 +127,7 @@ class Repository {
     });
 
     runInTransaction();
+    if (typeof db.saveSnapshot === 'function') db.saveSnapshot();
     return db.prepare('SELECT * FROM transactions WHERE id = ?').get(txId);
   }
 
@@ -136,6 +141,7 @@ class Repository {
     db.prepare("UPDATE transactions SET status = 'rejected', details = ? WHERE id = ?")
       .run(reason, txId);
 
+    if (typeof db.saveSnapshot === 'function') db.saveSnapshot();
     return db.prepare('SELECT * FROM transactions WHERE id = ?').get(txId);
   }
 
@@ -168,6 +174,7 @@ class Repository {
       profitUzs
     );
 
+    if (typeof db.saveSnapshot === 'function') db.saveSnapshot();
     return db.prepare('SELECT * FROM smm_orders WHERE order_code = ?').get(orderCode);
   }
 
